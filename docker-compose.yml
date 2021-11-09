@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  arvan_test_app:
+    build:
+      args:
+        user: arvan_user
+        uid: 1000
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    image: arvantest
+    container_name: arvan_test_app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - app_network
+
+  arvan_test_nginx:
+    image: nginx:1.17-alpine
+    container_name: arvan_test_nginx
+    restart: unless-stopped
+    ports:
+      - 8001:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - app_network
+
+  arvan_test_mysql:
+    image: mysql:5.7
+    container_name: arvan_test_mysql
+    restart: unless-stopped
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app_network
+
+  arvan_test_redis:
+    image: redis:alpine
+    ports:
+      - 6380:6379
+    volumes:
+      - redis-data:/data
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  redis-data:
+    driver: local
