@@ -26,11 +26,9 @@ class PurchaseArticle
     {
         $articleFee = app(SettingService::class)->getSettingValue(Setting::ARTICLE_FEE);
 
-        $user = $event->article->user;
+        app(UserService::class)->decreaseUserBalance($event->article->user, $articleFee);
 
-        app(UserService::class)->decreaseUserBalance($user, $articleFee);
-
-        $transaction = app(TransactionService::class)->createAndReturnTransaction($user->id, $articleFee);
+        $transaction = app(TransactionService::class)->createAndReturnTransaction($event->article->user->id, $articleFee);
 
         app(FactorService::class)->createFactor($transaction->id, $event->article->id,Article::class);
     }

@@ -53,7 +53,10 @@ class AuthController extends ApiController
             'password' => bcrypt($request->input('user.password')),
         ]);
 
-        event(new UserRegistered($user));
+        if(!$user->is_admin)
+        {
+            event(new UserRegistered($user));
+        }
 
         return $this->respondWithTransformer($user);
     }
