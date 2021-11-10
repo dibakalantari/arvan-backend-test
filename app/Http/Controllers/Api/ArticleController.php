@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ArticleStored;
 use App\Tag;
 use App\Article;
 use App\RealWorld\Paginate\Paginate;
@@ -10,13 +11,15 @@ use App\Http\Requests\Api\CreateArticle;
 use App\Http\Requests\Api\UpdateArticle;
 use App\Http\Requests\Api\DeleteArticle;
 use App\RealWorld\Transformers\ArticleTransformer;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ArticleController extends ApiController
 {
     /**
      * ArticleController constructor.
      *
-     * @param ArticleTransformer $transformer
+     * @param  ArticleTransformer  $transformer
      */
     public function __construct(ArticleTransformer $transformer)
     {
@@ -29,7 +32,7 @@ class ArticleController extends ApiController
     /**
      * Get all the articles.
      *
-     * @param ArticleFilter $filter
+     * @param  ArticleFilter  $filter
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(ArticleFilter $filter)
@@ -42,28 +45,37 @@ class ArticleController extends ApiController
     /**
      * Create a new article and return the article if successful.
      *
-     * @param CreateArticle $request
+     * @param  CreateArticle  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateArticle $request)
     {
         $user = auth()->user();
 
-        $article = $user->articles()->create([
-            'title' => $request->input('article.title'),
-            'description' => $request->input('article.description'),
-            'body' => $request->input('article.body'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $article = $user->articles()->create([
+                'title' => $request->input('article.title'),
+                'description' => $request->input('article.description'),
+                'body' => $request->input('article.body'),
+            ]);
 
-        $inputTags = $request->input('article.tagList');
+            $inputTags = $request->input('article.tagList');
 
-        if ($inputTags && ! empty($inputTags)) {
+            if ($inputTags && !empty($inputTags)) {
+                $tags = array_map(function ($name) {
+                    return Tag::firstOrCreate(['name' => $name])->id;
+                }, $inputTags);
 
-            $tags = array_map(function($name) {
-                return Tag::firstOrCreate(['name' => $name])->id;
-            }, $inputTags);
+                $article->tags()->attach($tags);
+            }
 
-            $article->tags()->attach($tags);
+            event(new ArticleStored($article));
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            Log::error("Error on storing article for user with id {$user->id} with this error :".$exception->getMessage());
+            return $this->respondInternalError();
         }
 
         return $this->respondWithTransformer($article);
@@ -72,7 +84,7 @@ class ArticleController extends ApiController
     /**
      * Get the article given by its slug.
      *
-     * @param Article $article
+     * @param  Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Article $article)
@@ -83,8 +95,8 @@ class ArticleController extends ApiController
     /**
      * Update the article given by its slug and return the article if successful.
      *
-     * @param UpdateArticle $request
-     * @param Article $article
+     * @param  UpdateArticle  $request
+     * @param  Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateArticle $request, Article $article)
@@ -99,8 +111,8 @@ class ArticleController extends ApiController
     /**
      * Delete the article given by its slug.
      *
-     * @param DeleteArticle $request
-     * @param Article $article
+     * @param  DeleteArticle  $request
+     * @param  Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(DeleteArticle $request, Article $article)
