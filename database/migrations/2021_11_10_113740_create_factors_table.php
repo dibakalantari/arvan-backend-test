@@ -15,9 +15,8 @@ class CreateFactorsTable extends Migration
     {
         Schema::create('factors', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('price');
-            $table->string('transaction_id');
-            $table->morphs('publishable');
+            $table->unsignedInteger('transaction_id');
+            $table->morphs('purchasable');
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions');

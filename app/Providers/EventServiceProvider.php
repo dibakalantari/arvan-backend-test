@@ -16,6 +16,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\UserRegistered' => [
             'App\Listeners\ChargeRegisteredUser',
         ],
+
+        'App\Events\ArticleStored' => [
+            'App\Listeners\PurchaseArticle',
+        ],
     ];
 
     /**
