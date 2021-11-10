@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\UserRegistered;
 use Auth;
 use App\User;
 use App\Http\Requests\Api\LoginUser;
@@ -51,6 +52,8 @@ class AuthController extends ApiController
             'email' => $request->input('user.email'),
             'password' => bcrypt($request->input('user.password')),
         ]);
+
+        event(new UserRegistered($user));
 
         return $this->respondWithTransformer($user);
     }
