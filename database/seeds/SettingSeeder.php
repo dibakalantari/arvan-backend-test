@@ -17,7 +17,7 @@ class SettingSeeder extends Seeder
         Setting::insert([
             [
                 'name' => Setting::REGISTERED_USER_CHARGE,
-                'value' => 100,
+                'value' => 100000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -14,7 +14,7 @@ class AddBalanceColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users',function (Blueprint $table){
-            $table->unsignedDecimal('balance')->default(0)->after('image');
+            $table->integer('balance')->default(0)->after('image');
         });
     }
 

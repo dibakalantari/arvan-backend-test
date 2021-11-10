@@ -31,6 +31,10 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    protected $casts = [
+      'is_admin' => 'boolean'
+    ];
+
     /**
      * Set the password using bcrypt hash.
      *
