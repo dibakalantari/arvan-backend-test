@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
+use App\Services\TransactionService;
 use App\Services\UserService;
 use App\Services\SettingService;
 use App\Setting;
@@ -24,6 +25,8 @@ class ChargeRegisteredUser implements ShouldQueue
             $registeredUserCharge = app(SettingService::class)->getSettingValue(Setting::REGISTERED_USER_CHARGE);
 
             app(UserService::class)->increaseUserBalance($event->user,$registeredUserCharge);
+
+            app(TransactionService::class)->createAndReturnTransaction($event->user->id, $registeredUserCharge,true);
         } catch (\Exception $exception) {
             Log::error("Error on charging registered user with id {$event->user->id} with this error :".$exception->getMessage());
         }
