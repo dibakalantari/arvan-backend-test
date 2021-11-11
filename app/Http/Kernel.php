@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\LimitInactiveUser;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -58,5 +59,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth.api' => \App\Http\Middleware\AuthenticateWithJWT::class,
         'cors' => \Barryvdh\Cors\HandleCors::class,
+        'inactive.user' => LimitInactiveUser::class,
     ];
 }
