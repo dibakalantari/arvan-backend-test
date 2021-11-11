@@ -9,6 +9,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Class User
+ *
+ * @property string username
+ * @property string email
+ * @property string bio
+ * @property string image
+ * @property bool is_admin
+ * @property int credit
+ * @property string status
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, Followable, HasFavorite;
@@ -19,7 +30,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'bio', 'image','is_admin','credit'
+        'username', 'email', 'password', 'bio', 'image', 'is_admin', 'credit','status'
     ];
 
     /**
@@ -32,7 +43,17 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $casts = [
-      'is_admin' => 'boolean'
+        'is_admin' => 'boolean'
+    ];
+
+    const RECHARGE_NEEDED_STATUS = 'recharge_needed';
+    const ACTIVE_STATUS = 'active';
+    const INACTIVE_STATUS = 'inactive';
+
+    public static $statuses = [
+        self::RECHARGE_NEEDED_STATUS,
+        self::ACTIVE_STATUS,
+        self::INACTIVE_STATUS,
     ];
 
     /**
@@ -115,5 +136,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function isActive()
+    {
+        return $this->status = self::ACTIVE_STATUS;
+    }
+
+    public function isRechargeNeeded()
+    {
+        return $this->status = self::ACTIVE_STATUS;
     }
 }

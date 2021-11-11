@@ -40,7 +40,7 @@ class SettingSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => Setting::WARNING_NEEDED_BALANCE,
+                'name' => Setting::RECHARGE_NEEDED_CREDIT,
                 'value' => 20000,
                 'created_at' => now(),
                 'updated_at' => now(),

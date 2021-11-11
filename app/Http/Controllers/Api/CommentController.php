@@ -17,7 +17,7 @@ class CommentController extends ApiController
     /**
      * CommentController constructor.
      *
-     * @param CommentTransformer $transformer
+     * @param  CommentTransformer  $transformer
      */
     public function __construct(CommentTransformer $transformer)
     {
@@ -30,7 +30,7 @@ class CommentController extends ApiController
     /**
      * Get all the comments of the article given by its slug.
      *
-     * @param Article $article
+     * @param  Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Article $article)
@@ -43,26 +43,22 @@ class CommentController extends ApiController
     /**
      * Add a comment to the article given by its slug and return the comment if successful.
      *
-     * @param CreateComment $request
-     * @param Article $article
+     * @param  CreateComment  $request
+     * @param  Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateComment $request, Article $article)
     {
         DB::beginTransaction();
-        try{
-            $comment = app(CommentService::class)->storeAndReturnComment(auth()->user(),$article->id,$request->input('comment.body'));
+        try {
+            $comment = app(CommentService::class)->storeAndReturnComment(auth()->user(), $article->id,
+                $request->input('comment.body'));
 
             DB::commit();
-        }catch (Exception $exception) {
+        } catch (Exception $exception) {
             DB::rollback();
-            if($exception->getCode() == 500) //TODO refactor this
-            {
-                Log::error("Error on storing article for article with id {$article->id} with this error :".$exception->getMessage());
-                return $this->respondInternalError();
-            }
-
-            return $this->respondError($exception->getMessage(), $exception->getCode());
+            Log::error("Error on storing article for article with id {$article->id} with this error :".$exception->getMessage());
+            return $this->respondInternalError();
         }
 
         return $this->respondWithTransformer($comment);
@@ -71,9 +67,9 @@ class CommentController extends ApiController
     /**
      * Delete the comment given by its id.
      *
-     * @param DeleteComment $request
+     * @param  DeleteComment  $request
      * @param $article
-     * @param Comment $comment
+     * @param  Comment  $comment
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(DeleteComment $request, $article, Comment $comment)

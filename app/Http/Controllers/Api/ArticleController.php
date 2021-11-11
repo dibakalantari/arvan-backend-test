@@ -74,13 +74,8 @@ class ArticleController extends ApiController
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollback();
-            if($exception->getCode() == 500) //TODO refactor this
-            {
-                Log::error("Error on storing article for user with id {$user->id} with this error :".$exception->getMessage());
-                return $this->respondInternalError();
-            }
-
-            return $this->respondError($exception->getMessage(), $exception->getCode());
+            Log::error("Error on storing article for user with id {$user->id} with this error :".$exception->getMessage());
+            return $this->respondInternalError();
         }
 
         return $this->respondWithTransformer($article);
