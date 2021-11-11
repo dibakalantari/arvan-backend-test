@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\CommentService;
 use App\Services\FactorService;
 use App\Services\TransactionService;
 use App\Services\UserService;
@@ -15,5 +16,6 @@ class ServiceClassesServiceProvider extends ServiceProvider
         SettingService::class => SettingService::class,
         TransactionService::class => TransactionService::class,
         FactorService::class => FactorService::class,
+        CommentService::class => CommentService::class,
     ];
 }
