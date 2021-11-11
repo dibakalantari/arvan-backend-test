@@ -7,6 +7,10 @@ use App\Comment;
 use App\Http\Requests\Api\CreateComment;
 use App\Http\Requests\Api\DeleteComment;
 use App\RealWorld\Transformers\CommentTransformer;
+use App\Services\CommentService;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommentController extends ApiController
 {
@@ -45,10 +49,21 @@ class CommentController extends ApiController
      */
     public function store(CreateComment $request, Article $article)
     {
-        $comment = $article->comments()->create([
-            'body' => $request->input('comment.body'),
-            'user_id' => auth()->id(),
-        ]);
+        DB::beginTransaction();
+        try{
+            $comment = app(CommentService::class)->storeAndReturnComment(auth()->user(),$article->id,$request->input('comment.body'));
+
+            DB::commit();
+        }catch (Exception $exception) {
+            DB::rollback();
+            if($exception->getCode() == 500) //TODO refactor this
+            {
+                Log::error("Error on storing article for article with id {$article->id} with this error :".$exception->getMessage());
+                return $this->respondInternalError();
+            }
+
+            return $this->respondError($exception->getMessage(), $exception->getCode());
+        }
 
         return $this->respondWithTransformer($comment);
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddBalanceColumnToUsersTable extends Migration
+class AddCreditColumnToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddBalanceColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users',function (Blueprint $table){
-            $table->integer('balance')->default(0)->after('image');
+            $table->integer('credit')->default(0)->after('image');
         });
     }
 
@@ -26,7 +26,7 @@ class AddBalanceColumnToUsersTable extends Migration
     public function down()
     {
         Schema::table('users',function (Blueprint $table){
-            $table->dropColumn('balance');
+            $table->dropColumn('credit');
         });
     }
 }
