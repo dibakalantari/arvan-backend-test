@@ -12,7 +12,7 @@ class Setting extends Model
     const ARTICLE_FEE = 'article_fee';
     const FREE_COMMENTS_COUNT = 'free_comments_count';
     const COMMENT_FEE = 'comment_fee';
-    const WARNING_NEEDED_BALANCE = 'warning_needed_balance';
+    const RECHARGE_NEEDED_CREDIT = 'recharge_needed_credit';
     const WAITING_HOURS_BEFORE_DELETING_USER = 'waiting_hours_before_deleting_user';
 
     public static $names = [
@@ -20,7 +20,7 @@ class Setting extends Model
         self::ARTICLE_FEE,
         self::FREE_COMMENTS_COUNT,
         self::COMMENT_FEE,
-        self::WARNING_NEEDED_BALANCE,
+        self::RECHARGE_NEEDED_CREDIT,
         self::WAITING_HOURS_BEFORE_DELETING_USER,
     ];
 }
