@@ -11,4 +11,9 @@ class Factor extends Model
         'purchasable_id',
         'purchasable_type',
     ];
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
 }
