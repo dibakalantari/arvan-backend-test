@@ -25,6 +25,7 @@ class CommentController extends ApiController
 
         $this->middleware('auth.api')->except('index');
         $this->middleware('auth.api:optional')->only('index');
+        $this->middleware('inactive.user')->only(['store']);
     }
 
     /**

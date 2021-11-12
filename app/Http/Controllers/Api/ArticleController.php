@@ -11,6 +11,7 @@ use App\Http\Requests\Api\CreateArticle;
 use App\Http\Requests\Api\UpdateArticle;
 use App\Http\Requests\Api\DeleteArticle;
 use App\RealWorld\Transformers\ArticleTransformer;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,6 +28,7 @@ class ArticleController extends ApiController
 
         $this->middleware('auth.api')->except(['index', 'show']);
         $this->middleware('auth.api:optional')->only(['index', 'show']);
+        $this->middleware('inactive.user')->only(['store']);
     }
 
     /**
