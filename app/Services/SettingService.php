@@ -18,4 +18,11 @@ class SettingService
 
         return $setting->value;
     }
+
+    public function updateSettingValue(Setting $setting,$value)
+    {
+        $setting->update([
+           'value' => $value
+        ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CheckIfUserIsAdmin;
 use App\Http\Middleware\LimitInactiveUser;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -60,5 +61,6 @@ class Kernel extends HttpKernel
         'auth.api' => \App\Http\Middleware\AuthenticateWithJWT::class,
         'cors' => \Barryvdh\Cors\HandleCors::class,
         'inactive.user' => LimitInactiveUser::class,
+        'user.isAdmin' => CheckIfUserIsAdmin::class,
     ];
 }

@@ -2,11 +2,10 @@
 
 namespace App;
 
-use App\RealWorld\Follow\Followable;
 use App\RealWorld\Favorite\HasFavorite;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Notifications\Notifiable;
+use App\RealWorld\Follow\Followable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
