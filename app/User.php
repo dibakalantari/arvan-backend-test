@@ -4,6 +4,7 @@ namespace App;
 
 use App\RealWorld\Follow\Followable;
 use App\RealWorld\Favorite\HasFavorite;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -138,13 +139,23 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function isActive()
+    public function isActive(): bool
     {
-        return $this->status = self::ACTIVE_STATUS;
+        return $this->status === self::ACTIVE_STATUS;
     }
 
-    public function isRechargeNeeded()
+    public function isInactive(): bool
     {
-        return $this->status = self::ACTIVE_STATUS;
+        return $this->status === self::INACTIVE_STATUS;
+    }
+
+    public function isRechargeNeeded(): bool
+    {
+        return $this->status === self::RECHARGE_NEEDED_STATUS;
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

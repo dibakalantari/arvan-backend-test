@@ -20,7 +20,10 @@ class CreateTransactionsTable extends Migration
             $table->boolean('increment')->default(0);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

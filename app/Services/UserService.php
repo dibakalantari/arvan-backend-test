@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\NotificationChannel;
+use App\Jobs\DeleteUser;
 use App\Setting;
 use App\User;
 
@@ -20,9 +21,11 @@ class UserService
         $user->decrement('credit',$amount);
 
         $this->checkUserCreditAndSendNotification($user);
+
+        $this->checkIfUserShouldBeInactive($user);
     }
 
-    public function checkUserCreditAndSendNotification(User $user) //TODO: you can transfer this to another AccountService
+    public function checkUserCreditAndSendNotification(User $user)
     {
         $rechargeNeededCredit = app(SettingService::class)->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT);
 
@@ -38,6 +41,19 @@ class UserService
     {
         if($user->isRechargeNeeded() && $user->credit > app(SettingService::class)->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT)) {
             $this->changeUserStatus($user,User::ACTIVE_STATUS);
+        }
+
+        if($user->isInactive() && $user->credit >= 0) {
+            $this->changeUserStatus($user,User::ACTIVE_STATUS);
+        }
+    }
+
+    public function checkIfUserShouldBeInactive(User $user)
+    {
+        if($user->credit < 0 && !$user->isInactive()) {
+            $this->changeUserStatus($user,User::INACTIVE_STATUS);
+
+            DeleteUser::dispatch($user)->delay(now()->addDay());
         }
     }
 
