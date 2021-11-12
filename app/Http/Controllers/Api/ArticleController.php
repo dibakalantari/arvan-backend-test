@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\ArticleStored;
-use App\Tag;
 use App\Article;
-use App\RealWorld\Paginate\Paginate;
-use App\RealWorld\Filters\ArticleFilter;
+use App\Events\ArticleStored;
 use App\Http\Requests\Api\CreateArticle;
-use App\Http\Requests\Api\UpdateArticle;
 use App\Http\Requests\Api\DeleteArticle;
+use App\Http\Requests\Api\UpdateArticle;
+use App\RealWorld\Filters\ArticleFilter;
+use App\RealWorld\Paginate\Paginate;
 use App\RealWorld\Transformers\ArticleTransformer;
-use App\User;
+use App\Tag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
