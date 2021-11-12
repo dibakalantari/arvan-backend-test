@@ -42,4 +42,7 @@ Route::group(['namespace' => 'Api'], function () {
 
     Route::get('tags', 'TagController@index');
 
+    Route::get('settings', 'SettingController@index');
+    Route::match(['put', 'patch'], 'settings/{setting}', 'SettingController@update');
+
 });
