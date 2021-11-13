@@ -2,7 +2,8 @@
 
 This repository is an extended version of https://github.com/gothinkster/laravel-realworld-example-app
 
-#Installation
+# Installation
+
 In order to run this project locally you need to proceed following steps:
 
 ```shell
