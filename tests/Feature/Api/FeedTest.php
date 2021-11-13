@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class FeedTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_an_empty_array_of_articles_when_user_does_not_follow_anyone()
     {

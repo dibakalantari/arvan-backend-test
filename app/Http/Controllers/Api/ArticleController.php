@@ -10,7 +10,9 @@ use App\Http\Requests\Api\UpdateArticle;
 use App\RealWorld\Filters\ArticleFilter;
 use App\RealWorld\Paginate\Paginate;
 use App\RealWorld\Transformers\ArticleTransformer;
+use App\Services\ArticleService;
 use App\Tag;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -51,27 +53,18 @@ class ArticleController extends ApiController
      */
     public function store(CreateArticle $request)
     {
+        /** @var User $user */
         $user = auth()->user();
 
         DB::beginTransaction();
         try {
-            $article = $user->articles()->create([
+            $article = (new ArticleService())->store($user,[
                 'title' => $request->input('article.title'),
                 'description' => $request->input('article.description'),
                 'body' => $request->input('article.body'),
+                'tags' => $request->input('article.tagList') ?? []
             ]);
 
-            $inputTags = $request->input('article.tagList');
-
-            if ($inputTags && !empty($inputTags)) {
-                $tags = array_map(function ($name) {
-                    return Tag::firstOrCreate(['name' => $name])->id;
-                }, $inputTags);
-
-                $article->tags()->attach($tags);
-            }
-
-            event(new ArticleStored($article));
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollback();

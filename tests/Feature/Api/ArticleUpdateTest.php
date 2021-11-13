@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticleUpdateTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_the_updated_article_on_successfully_updating_the_article()
     {

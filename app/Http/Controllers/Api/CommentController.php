@@ -52,8 +52,10 @@ class CommentController extends ApiController
     {
         DB::beginTransaction();
         try {
-            $comment = app(CommentService::class)->storeAndReturnComment(auth()->user(), $article->id,
-                $request->input('comment.body'));
+            $comment = (new CommentService())->store($article, [
+                'user_id' => auth()->id(),
+                'body' => $request->input('comment.body'),
+            ]);
 
             DB::commit();
         } catch (Exception $exception) {

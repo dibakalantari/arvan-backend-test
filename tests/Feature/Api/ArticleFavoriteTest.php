@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticleFavoriteTest extends TestCase
 {
-    use DatabaseMigrations;
-
     protected $article;
 
     public function setUp()

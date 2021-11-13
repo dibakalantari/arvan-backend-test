@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api;
 
+use App\Events\ArticleStored;
+use App\User;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticleCreateTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_the_article_on_successfully_creating_a_new_article()
     {
@@ -97,5 +98,17 @@ class ArticleCreateTest extends TestCase
         $response = $this->postJson('/api/articles', []);
 
         $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function it_returns_an_unauthorized_error_when_user_is_inactive()
+    {
+        $this->loggedInUser->update([
+            'status' => User::INACTIVE_STATUS
+        ]);
+
+        $response = $this->postJson('/api/articles', [],$this->headers);
+
+        $response->assertStatus(403);
     }
 }

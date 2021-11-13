@@ -8,6 +8,8 @@ class Setting extends Model
 {
     protected $fillable = ['name','value'];
 
+    public static $cacheKey = "setting";
+
     const REGISTERED_USER_CHARGE = 'registered_user_charge';
     const ARTICLE_FEE = 'article_fee';
     const FREE_COMMENTS_COUNT = 'free_comments_count';

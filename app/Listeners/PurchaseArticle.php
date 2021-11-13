@@ -5,14 +5,11 @@ namespace App\Listeners;
 use App\Article;
 use App\Events\ArticleStored;
 use App\Services\FactorService;
+use App\Services\PaymentService;
 use App\Services\SettingService;
 use App\Services\TransactionService;
 use App\Services\UserService;
 use App\Setting;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class PurchaseArticle
 {
@@ -24,12 +21,12 @@ class PurchaseArticle
      */
     public function handle(ArticleStored $event)
     {
-        $articleFee = app(SettingService::class)->getSettingValue(Setting::ARTICLE_FEE);
+        $articleFee = (new SettingService())->getSettingValue(Setting::ARTICLE_FEE);
 
-        $transaction = app(TransactionService::class)->createAndReturnTransaction($event->article->user->id, $articleFee);
-
-        app(FactorService::class)->createFactor($transaction->id, $event->article->id,Article::class);
-
-        app(UserService::class)->decreaseUserBalance($event->article->user, $articleFee);
+        (new PaymentService())->create($event->article->user,[
+            'amount' => $articleFee,
+            'purchasable_id' => $event->article->id,
+            'purchasable_type' => Article::class,
+        ]);
     }
 }

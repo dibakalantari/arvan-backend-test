@@ -2,16 +2,17 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
+use App\Events\UserRegistered;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_user_with_token_on_valid_registration()
     {
+        Event::fake();
         $data = [
             'user' => [
                 'username' => 'test',
@@ -21,6 +22,8 @@ class RegistrationTest extends TestCase
         ];
 
         $response = $this->postJson('/api/users', $data);
+
+        Event::assertDispatched(UserRegistered::class);
 
         $response->assertStatus(200)
             ->assertJson([

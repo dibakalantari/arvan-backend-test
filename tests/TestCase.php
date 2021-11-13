@@ -2,11 +2,14 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Artisan;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use DatabaseMigrations;
 
     protected $loggedInUser;
 
@@ -18,6 +21,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        Artisan::call('db:seed');
         $users = factory(\App\User::class)->times(2)->create();
 
         $this->loggedInUser = $users[0];

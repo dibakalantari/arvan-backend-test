@@ -2,13 +2,12 @@
 
 namespace Tests\Feature\Api;
 
+use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class CommentTest extends TestCase
 {
-    use DatabaseMigrations;
-
     protected $article;
 
     public function setUp()
@@ -38,6 +37,18 @@ class CommentTest extends TestCase
                     ],
                 ]
             ]);
+    }
+
+    /** @test */
+    public function it_returns_an_unauthorized_error_when_user_is_inactive()
+    {
+        $this->loggedInUser->update([
+            'status' => User::INACTIVE_STATUS
+        ]);
+
+        $response = $this->postJson("/api/articles/{$this->article->slug}/comments", [],$this->headers);
+
+        $response->assertStatus(403);
     }
 
     /** @test */

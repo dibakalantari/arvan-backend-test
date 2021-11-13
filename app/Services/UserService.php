@@ -9,15 +9,21 @@ use App\User;
 
 class UserService
 {
-    public function increaseUserBalance(User $user,float $amount)
+    public function increaseUserCredit(int $user_id,int $amount): void
     {
+        /** @var User $user */
+        $user = User::query()->lockForUpdate()->find($user_id);
+
         $user->increment('credit',$amount);
 
         $this->checkIfUserIsActivated($user);
     }
 
-    public function decreaseUserBalance(User $user,float $amount)
+    public function decreaseUserBalance(int $user_id,int $amount): void
     {
+        /** @var User $user */
+        $user = User::query()->lockForUpdate()->find($user_id);
+
         $user->decrement('credit',$amount);
 
         $this->checkUserCreditAndSendNotification($user);
@@ -25,11 +31,11 @@ class UserService
         $this->checkIfUserShouldBeInactive($user);
     }
 
-    public function checkUserCreditAndSendNotification(User $user)
+    public function checkUserCreditAndSendNotification(User $user): void
     {
-        $rechargeNeededCredit = app(SettingService::class)->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT);
+        $rechargeNeededCredit = (new SettingService())->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT);
 
-        if($user->credit <= $rechargeNeededCredit && $user->isActive())
+        if($user->credit <= (int)$rechargeNeededCredit && $user->isActive())
         {
             app(NotificationChannel::class)->send($user);
 
@@ -37,9 +43,11 @@ class UserService
         }
     }
 
-    public function checkIfUserIsActivated(User $user)
+    public function checkIfUserIsActivated(User $user): void
     {
-        if($user->isRechargeNeeded() && $user->credit > app(SettingService::class)->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT)) {
+        $rechargeNeededCredit = (new SettingService())->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT);
+
+        if($user->isRechargeNeeded() && $user->credit > $rechargeNeededCredit) {
             $this->changeUserStatus($user,User::ACTIVE_STATUS);
         }
 
@@ -48,19 +56,26 @@ class UserService
         }
     }
 
-    public function checkIfUserShouldBeInactive(User $user)
+    public function checkIfUserShouldBeInactive(User $user): void
     {
         if($user->credit < 0 && !$user->isInactive()) {
             $this->changeUserStatus($user,User::INACTIVE_STATUS);
 
-            DeleteUser::dispatch($user)->delay(now()->addDay());
+            $waitingHoursBeforeDeletingUser = (new SettingService())->getSettingValue(Setting::WAITING_HOURS_BEFORE_DELETING_USER);
+
+            DeleteUser::dispatch($user)->delay(now()->addHours($waitingHoursBeforeDeletingUser));
         }
     }
 
-    public function changeUserStatus(User $user,string $status)
+    public function changeUserStatus(User $user,string $status): void
     {
         $user->update([
            'status' => $status
         ]);
+    }
+
+    public function deleteUser(User $user)
+    {
+        $user->delete();
     }
 }

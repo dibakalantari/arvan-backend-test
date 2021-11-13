@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Factor;
+use App\Transaction;
 
 class FactorService
 {
-    public function createFactor(int $transaction_id,int $purchasable_id,string $purchasable_type)
+    public function createFactor(Transaction $transaction,array $data): void
     {
-        Factor::query()->create([
-            'transaction_id' => $transaction_id,
-            'purchasable_id' => $purchasable_id,
-            'purchasable_type' => $purchasable_type,
+        $transaction->factor()->create([
+            'purchasable_id' => $data['purchasable_id'],
+            'purchasable_type' => $data['purchasable_type'],
         ]);
     }
 }
