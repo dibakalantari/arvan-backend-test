@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\User;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -20,6 +21,8 @@ class CommentTest extends TestCase
     /** @test */
     public function it_returns_the_comment_on_successfully_adding_a_comment_to_the_article()
     {
+        Event::fake();
+
         $data = [
             'comment' => [
                 'body' => 'This is a comment'

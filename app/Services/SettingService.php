@@ -21,7 +21,7 @@ class SettingService
             throw new NotFoundResourceException();
         }
 
-        cache()->rememberForever(Setting::$cacheKey."_{$setting->name}",$setting->value());
+        cache()->forever(Setting::$cacheKey."_{$setting->name}",$setting->value);
 
         return $setting->value;
     }

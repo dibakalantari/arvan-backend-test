@@ -13,6 +13,8 @@ class ArticleCreateTest extends TestCase
     /** @test */
     public function it_returns_the_article_on_successfully_creating_a_new_article()
     {
+        Event::fake();
+
         $data = [
             'article' => [
                 'title' => 'test title',
