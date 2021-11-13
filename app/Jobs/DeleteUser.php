@@ -2,12 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Services\UserService;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class DeleteUser implements ShouldQueue
@@ -32,9 +34,19 @@ class DeleteUser implements ShouldQueue
      */
     public function handle()
     {
-        if($this->user->credit < 0)
+        if($this->user->credit >= 0)
         {
-            $this->user->delete();
+            return;
+        }
+
+        DB::beginTransaction();
+        try {
+            (new UserService())->deleteUser($this->user);
+
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            Log::error("Error on deleting user with id {$this->user->id} with this error :".$exception->getMessage());
         }
     }
 }

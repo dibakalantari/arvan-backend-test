@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticlePaginateTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_the_correct_articles_with_limit_and_offset()
     {

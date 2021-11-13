@@ -15,4 +15,9 @@ class Transaction extends Model
     protected $casts = [
       'increment' => 'boolean'
     ];
+
+    public function factor()
+    {
+        return $this->hasOne(Factor::class);
+    }
 }

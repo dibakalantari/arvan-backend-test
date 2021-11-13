@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\UserRegistered;
-use Auth;
-use App\User;
 use App\Http\Requests\Api\LoginUser;
 use App\Http\Requests\Api\RegisterUser;
 use App\RealWorld\Transformers\UserTransformer;
+use App\Services\AuthService;
+use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends ApiController
 {
     /**
      * AuthController constructor.
      *
-     * @param UserTransformer $transformer
+     * @param  UserTransformer  $transformer
      */
     public function __construct(UserTransformer $transformer)
     {
@@ -24,7 +25,7 @@ class AuthController extends ApiController
     /**
      * Login user and return the user if successful.
      *
-     * @param LoginUser $request
+     * @param  LoginUser  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(LoginUser $request)
@@ -32,7 +33,7 @@ class AuthController extends ApiController
         $credentials = $request->only('user.email', 'user.password');
         $credentials = $credentials['user'];
 
-        if (! Auth::once($credentials)) {
+        if (!Auth::once($credentials)) {
             return $this->respondFailedLogin();
         }
 
@@ -42,20 +43,24 @@ class AuthController extends ApiController
     /**
      * Register a new user and return the user if successful.
      *
-     * @param RegisterUser $request
+     * @param  RegisterUser  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(RegisterUser $request)
     {
-        $user = User::create([
-            'username' => $request->input('user.username'),
-            'email' => $request->input('user.email'),
-            'password' => bcrypt($request->input('user.password')),
-        ]);
+        DB::beginTransaction();
+        try {
+            $user = (new AuthService())->register([
+                'username' => $request->input('user.username'),
+                'email' => $request->input('user.email'),
+                'password' => bcrypt($request->input('user.password')),
+            ]);
 
-        if(!$user->is_admin)
-        {
-            event(new UserRegistered($user));
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            Log::error("Error on registering user with this error :".$exception->getMessage());
+            return $this->respondInternalError();
         }
 
         return $this->respondWithTransformer($user);

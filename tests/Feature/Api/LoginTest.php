@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class LoginTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_a_user_with_valid_token_on_valid_login()
     {

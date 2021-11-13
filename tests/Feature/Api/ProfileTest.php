@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ProfileTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_a_valid_profile()
     {

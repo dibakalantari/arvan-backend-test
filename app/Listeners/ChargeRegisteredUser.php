@@ -3,17 +3,14 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
+use App\Services\SettingService;
 use App\Services\TransactionService;
 use App\Services\UserService;
-use App\Services\SettingService;
 use App\Setting;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Log;
 
-class ChargeRegisteredUser implements ShouldQueue
+class ChargeRegisteredUser
 {
-     /**
+    /**
      * Handle the event.
      *
      * @param  UserRegistered  $event
@@ -21,14 +18,10 @@ class ChargeRegisteredUser implements ShouldQueue
      */
     public function handle(UserRegistered $event)
     {
-        try {
-            $registeredUserCharge = app(SettingService::class)->getSettingValue(Setting::REGISTERED_USER_CHARGE);
+        $registeredUserCharge = (new SettingService())->getSettingValue(Setting::REGISTERED_USER_CHARGE);
 
-            app(UserService::class)->increaseUserBalance($event->user,$registeredUserCharge);
+        (new UserService())->increaseUserCredit($event->user->id, $registeredUserCharge);
 
-            app(TransactionService::class)->createAndReturnTransaction($event->user->id, $registeredUserCharge,true);
-        } catch (\Exception $exception) {
-            Log::error("Error on charging registered user with id {$event->user->id} with this error :".$exception->getMessage());
-        }
+        (new TransactionService())->createAndReturnTransaction($event->user->id, $registeredUserCharge, true);
     }
 }

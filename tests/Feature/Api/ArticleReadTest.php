@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticleReadTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_an_empty_array_of_articles_when_no_articles_exist()
     {

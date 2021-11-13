@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class UserTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_the_current_user_when_logged_in()
     {

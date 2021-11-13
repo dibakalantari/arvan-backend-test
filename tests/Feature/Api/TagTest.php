@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class TagTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_an_array_of_tags()
     {

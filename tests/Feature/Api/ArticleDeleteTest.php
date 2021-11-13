@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ArticleDeleteTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /** @test */
     public function it_returns_a_200_success_response_on_successfully_removing_the_article()
     {

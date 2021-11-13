@@ -6,7 +6,6 @@ use App\Http\Requests\Api\UpdateSetting;
 use App\RealWorld\Transformers\SettingTransformer;
 use App\Services\SettingService;
 use App\Setting;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use mysql_xdevapi\Exception;
 
@@ -27,7 +26,7 @@ class SettingController extends ApiController
 
     public function index()
     {
-        $settings = Setting::all();
+        $settings = (new SettingService())->getAllSettings();
 
         return $this->respondWithTransformer($settings);
     }
@@ -35,7 +34,7 @@ class SettingController extends ApiController
     public function update(UpdateSetting $request,Setting $setting)
     {
         try {
-            app(SettingService::class)->updateSettingValue($setting,$request->input('setting.value'));
+            (new SettingService())->updateSettingValue($setting,$request->input('setting.value'));
         } catch (Exception $exception) {
             Log::error("Error on updating setting with this error :".$exception->getMessage());
             $this->respondInternalError();
