@@ -12,7 +12,7 @@ class SettingService
         return Setting::all();
     }
 
-    public function getSettingValue(string $name): string
+    public function getSettingValue(string $name)
     {
         $setting = Setting::query()->where('name',$name)->first();
 

@@ -47,7 +47,7 @@ class UserService
     {
         $rechargeNeededCredit = (new SettingService())->getSettingValue(Setting::RECHARGE_NEEDED_CREDIT);
 
-        if($user->isRechargeNeeded() && $user->credit > $rechargeNeededCredit) {
+        if($user->isRechargeNeeded() && $user->credit > (int)$rechargeNeededCredit) {
             $this->changeUserStatus($user,User::ACTIVE_STATUS);
         }
 
